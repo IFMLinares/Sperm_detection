@@ -42,13 +42,6 @@ Para problemas de PATH, permisos y ToS, ver [documentation/instalacion_windows.m
 - Entrenamiento: ver [documentation/entrenamiento.md](documentation/entrenamiento.md).
 - Detección y organización: ver [documentation/uso.md](documentation/uso.md) y [documentation/resultados.md](documentation/resultados.md).
 
----
-
-## **📤 Releases del modelo**
-Publica `best.pt` como asset de Release (no dentro del repo). Ver pasos en [sección de publicación](#-10-publicar-el-modelo-como-release-github).
-
----
-
 
 ## **🗺️ Roadmap Fase 2 (Clasificación/Morfología)**
 
