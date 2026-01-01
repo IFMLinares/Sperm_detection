@@ -1,0 +1,25 @@
+# Secretos y variables de entorno
+.env
+!/.env.example
+
+# Datos locales y resultados grandes (no versionar)
+my_images/
+result_fase_1/
+runs/
+Sperm-Detection-2/
+
+# Cachés y artefactos
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# VS Code
+.vscode/
+
+# Imágenes y datasets opcionales (comentar si quieres versionarlos)
+# data/
+# datasets/
+
+# Evitar subir notebooks de prueba (si se usan)
+*.ipynb_checkpoints/
