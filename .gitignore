@@ -8,6 +8,7 @@ result_fase_1/
 runs/
 Sperm-Detection-2/
 
+
 # Cachés y artefactos
 __pycache__/
 *.pyc
