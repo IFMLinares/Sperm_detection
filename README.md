@@ -6,13 +6,13 @@
 
 Este proyecto implementa un sistema de Visión Artificial basado en los estándares del **Manual de la OMS (2021)** para el análisis de semen.
 
-**Objetivo de la Fase 1:** Detectar y recortar automáticamente espermatozoides individuales en imágenes de microscopía (100x) utilizando **YOLOv8** y aceleración por GPU (NVIDIA RTX 3080).
+**Objetivo de la Fase 1:** Detectar y recortar automáticamente espermatozoides individuales en imágenes de microscopía (100x) utilizando **YOLOv8** y aceleración por GPU (USADA PARA EL ENTRENAMIENTO: NVIDIA RTX 3080).
 
 ## **📋 1\. Requisitos Previos**
 
 Antes de comenzar, asegúrate de tener instalado:
 
-1. **Miniconda** (Gestor de entornos Python).  
+1. **Miniconda O Anaconda** (Gestor de entornos Python, En este caso se utilizó Miniconda).  
 2. **Visual Studio Code** (Editor de código).  
 3. **Drivers de NVIDIA** actualizados (para soporte CUDA).  
 4. **Hardware Recomendado:** GPU NVIDIA con al menos 4GB de VRAM (Probado en RTX 3080 10GB).
@@ -23,7 +23,7 @@ Si es la primera vez que usas Conda en Windows con VS Code, debes realizar estos
 
 ### **A. Agregar Conda al PATH de Windows**
 
-Si la terminal no reconoce el comando conda, debes agregarlo manualmente a las variables de entorno:
+Si la terminal no reconoce el comando conda, debes agregarlo manualmente a las variables de entorno (Se usará de ejemplo la ruta de miniconda):
 
 1. Busca en Windows **"Editar las variables de entorno de esta cuenta"**.  
 2. Edita la variable Path y agrega estas 3 rutas (cambia TU\_USUARIO por tu nombre de usuario real):  
@@ -42,7 +42,7 @@ Set-ExecutionPolicy RemoteSigned \-Scope CurrentUser
 \# 2\. Inicializar Conda en PowerShell  
 conda init powershell
 
-*⚠️ **IMPORTANTE:** Cierra la terminal actual (icono de basura 🗑️) y abre una nueva para aplicar estos cambios.*
+*⚠️ **IMPORTANTE:** Cierra la terminal actual y abre una nueva para ver reflejados los cambios.*
 
 ### **C. Aceptar Términos de Servicio (Solución a error 'CondaToSNonInteractiveError')**
 
@@ -54,7 +54,7 @@ conda tos accept \--override-channels \--channel \[https://repo.anaconda.com/pkg
 
 ## **🚀 3\. Creación del Entorno Virtual**
 
-Sigue estos pasos para crear el entorno aislado y cargar las librerías de Inteligencia Artificial:
+Para generar un entorno aislado y cargar las librerías de IA
 
 \# 1\. Crear el entorno (Python 3.10 es la versión más estable para YOLOv8)  
 conda create \-n tesis\_espermas python=3.10 \-y
@@ -66,20 +66,24 @@ conda activate tesis\_espermas
 \# 3\. Instalar librerías principales  
 pip install ultralytics roboflow
 
+**Recomendado Instalar requirements.txt para mejor compatibiliodad con el proyecto:**
+
+```
+ pip install -r requirements.txt
+```
+
 ## **📥 4\. Descarga del Dataset (Script existente)**
 
 Usa el script ya incluido [download_data.py](download_data.py) para descargar automáticamente el dataset etiquetado desde Roboflow Universe y organizarlo en formato YOLOv8.
 
-- El script requiere tu API Key privada de Roboflow. Evita publicar esa clave en GitHub.
-- Si cambiaste credenciales, edita temporalmente el archivo y considera mover la clave a una variable de entorno.
+- El script requiere tu API Key privada de Roboflow.
+- Registra tu APIKEY de Roboflow en el archivo .env
 
 **Ejecutar descarga:**
 
 ```
 python download_data.py
 ```
-
-**Nota de seguridad:** No subas tu API Key al repositorio público. En producción, usa variables de entorno (`set ROBOFLOW_API_KEY=...`) y lee `os.getenv` en el script.
 
 ## **🧠 5\. Entrenamiento del Modelo (Script existente)**
 
@@ -117,7 +121,7 @@ Salida:
 
 **B) Organización por imagen con mapa numerado**
 - Script: [detect_organize.py](detect_organize.py)
-- Crea una carpeta por imagen en [result_fase_1](result_fase_1) y guarda:
+- Realiza la misma tarea que el script [detect_crop.py](detect_crop.py) pero este crea una carpeta por imagen en [result_fase_1](result_fase_1) y guarda:
   - Recortes numerados `*_esperma_{ID}.jpg`
   - Un “MAPA_NUMERADO” con rectángulos y etiquetas `ID`.
 
@@ -129,25 +133,8 @@ Ajusta `CONFIANZA`, `CARPETA_ORIGEN` y rutas en cada script si lo necesitas.
 
 ---
 
-## **🛡️ 7\. Seguridad y Buenas Prácticas**
 
-- **API Keys:** No publiques credenciales. Usa variables de entorno o `.env`.
-- **Pesos del modelo:** Verifica licencias si subes `*.pt` a GitHub.
-- **Datos sensibles:** Anonimiza imágenes si son clínicas.
-
-**Configurar `.env` (recomendado):**
-- Copia [\.env.example](.env.example) a `.env` y rellena `ROBOFLOW_API_KEY`.
-- En Windows también puedes definirla de forma persistente:
-
-```
-setx ROBOFLOW_API_KEY TU_API_KEY
-```
-
-El script [download_data.py](download_data.py) lee `ROBOFLOW_API_KEY` desde el entorno o `.env`.
-
----
-
-## **🗺️ 8\. Roadmap Fase 2 (Clasificación/Morfología)**
+## **🗺️ 7\. Roadmap Fase 2 (Clasificación/Morfología)**
 
 - Conteo robusto y métricas por campo (confiables para reporte).
 - Clasificación de morfología normal/anormal y motilidad.
@@ -155,30 +142,6 @@ El script [download_data.py](download_data.py) lee `ROBOFLOW_API_KEY` desde el e
 - Panel simple de visualización y QA de anotaciones.
 
 ---
-
-## **📤 9\. Publicación en GitHub: qué subir y qué excluir**
-
-- **Licencia:**
-  - **MIT**: muy simple y permisiva; ideal si quieres facilitar uso y reutilización sin condiciones complejas.
-  - **Apache-2.0**: también permisiva, con cláusula explícita de patentes y términos más detallados; útil si te interesa cobertura legal adicional.
-  - Elige MIT por simplicidad; Apache si te importa la protección/claridad de patentes.
-
-- **Secretos:** no subas credenciales. Usa `.env` (ejemplo en [\.env.example](.env.example)).
-
-- **Datos locales (imágenes originales):**
-  - Si son sensibles (clínicos), **no publiques**. Considera subir solo **un pequeño subconjunto anonimizado** o recortado.
-  - Para datasets grandes, usa **Git LFS** o enlaces externos (Roboflow, Kaggle, Drive) y documenta cómo obtenerlos.
-
-- **Resultados (crops, mapas numerados):**
-  - No es necesario subir todo; incluye **unos pocos ejemplos** en `documentation/` o como imágenes en el README.
-  - El resto queda excluido por [\.gitignore](.gitignore): `result_fase_1/` y `runs/`.
-
-- **Pesos del modelo (`*.pt`):**
-  - Tus pesos entrenados pueden ser grandes; compártelos como **release assets**, en **Hugging Face**, **Drive**, o con **Git LFS**.
-  - Verifica licencias del modelo base y dataset antes de distribuir pesos.
-
-El repositorio ya incluye [\.gitignore](.gitignore) para excluir `.env`, `my_images/`, `result_fase_1/`, `runs/`.
-
 ## **🛠️ Solución de Errores Comunes**
 
 | Error | Causa Probable | Solución |
