@@ -14,6 +14,13 @@ __pycache__/
 *.pyo
 *.log
 
+# Archivos comprimidos grandes (no versionar)
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+
 # VS Code
 .vscode/
 
