@@ -7,6 +7,12 @@
 ## Conda/PowerShell
 - Agrega Conda al PATH y ejecuta `conda init powershell`.
 - `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` si hay bloqueos.
+ - Si aparece `CondaToSNonInteractiveError`, acepta ToS:
+```
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/msys2
+```
 
 ## Memoria GPU
 - Baja `batch` en `train_hunter.py`.

@@ -1,8 +1,21 @@
 # Guía de Uso Rápida (Windows)
 
 ## Preparación
-- Verifica GPU y entorno: `python check_gpu.py`.
-- Descarga dataset (si aplica): `python download_data.py`.
+- Instalación y entorno: ver [instalacion_windows.md](instalacion_windows.md).
+- Instala dependencias:
+```
+pip install -r requirements.txt
+```
+- Verifica GPU y entorno:
+```
+python check_gpu.py
+```
+- Configura tu API Key de Roboflow en `.env` (ver [dataset.md](dataset.md)).
+
+## Descarga del dataset
+```
+python download_data.py
+```
 
 ## Entrenamiento
 ```
