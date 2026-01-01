@@ -11,7 +11,3 @@
 ## Clases
 - `sperm` (actual).
 - Fase 2 podría añadir clases de morfología: normal/anormal, motilidad.
-
-## Buenas prácticas
-- No publicar la API Key en repositorios.
-- Revisar etiquetas y calidad (evitar anotaciones ambiguas).
