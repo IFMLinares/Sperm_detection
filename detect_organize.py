@@ -8,8 +8,8 @@ from pathlib import Path
 # ⚙️ CONFIGURACIÓN
 # ==========================================
 CARPETA_ORIGEN = "my_images"       # Donde pones tus fotos
-CARPETA_SALIDA = "result_fase_1" # Donde saldrá todo ordenado
-CONFIANZA = 0.4                       # Nivel de exigencia
+CARPETA_SALIDA = "result_fase_1"   # Donde saldrá todo ordenado
+CONFIANZA = 0.4                    # Nivel de exigencia
 # ==========================================
 
 def main():
