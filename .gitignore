@@ -5,6 +5,10 @@
 # Datos locales y resultados grandes (no versionar)
 my_images/
 result_fase_1/
+# Cualquier carpeta con texto de result_fase
+result_fase_1_10p/
+result_fase_1_20p/
+pruebas/
 runs/
 Sperm-Detection-2/
 
@@ -28,6 +32,6 @@ __pycache__/
 # Imágenes y datasets opcionales (comentar si quieres versionarlos)
 # data/
 # datasets/
-
-# Evitar subir notebooks de prueba (si se usan)
 *.ipynb_checkpoints/
+/dataset_f2/
+/roboflow_dataset/
