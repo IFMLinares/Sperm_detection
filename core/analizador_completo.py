@@ -6,12 +6,12 @@ import os
 import glob
 
 # --- ⚙️ CONFIGURACIÓN DE RUTAS ---
-MODELO_YOLO = "runs/detect/trained_sperm_model/weights/best.pt"
-MODELO_KERAS = "runs/clasificacion/experimento_1/clasificador_morfologia_v1.keras"
+MODELO_YOLO = "../models/trained/runs/detect/trained_sperm_model/weights/best.pt"
+MODELO_KERAS = "../models/trained/clasificacion/experimento_1/clasificador_morfologia_v1.keras"
 
-# DIR_PRUEBAS = "pruebas/imagenes_microscopio"
-DIR_PRUEBAS = "my_images"
-DIR_RESULTADOS = "pruebas/resultados_20p"
+# DIR_PRUEBAS = "../docs/pruebas/imagenes_microscopio"
+DIR_PRUEBAS = "../data/raw/my_images"
+DIR_RESULTADOS = "../docs/pruebas/resultados_20p"
 
 IMG_SIZE = 224 # Tamaño para el clasificador Keras
 

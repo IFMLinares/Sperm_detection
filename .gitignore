@@ -11,6 +11,7 @@ result_fase_1_20p/
 pruebas/
 runs/
 Sperm-Detection-2/
+data/
 
 
 # Cachés y artefactos
@@ -34,4 +35,12 @@ __pycache__/
 # datasets/
 *.ipynb_checkpoints/
 /dataset_f2/
-/roboflow_dataset/
+/data/datasets/roboflow_dataset/
+/data/processed/
+/models/trained/
+/tools/morphology_evaluator/dist/
+/tools/morphology_evaluator/build/
+*.spec
+/dist/
+/build/
+*.spec

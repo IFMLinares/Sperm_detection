@@ -8,15 +8,15 @@ from pathlib import Path
 # ==========================================
 # ⚙️ CONFIGURACIÓN
 # ==========================================
-CARPETA_ORIGEN = "my_images"       # Donde pones tus fotos
-CARPETA_SALIDA = "result_fase_1_20p"   # Donde saldrá todo ordenado
-CARPETA_ROBOFLOW = "roboflow_dataset"  # Carpeta lista para arrastrar a Roboflow
+CARPETA_ORIGEN = "../data/raw/my_images"       # Donde pones tus fotos
+CARPETA_SALIDA = "../data/processed/result_fase_1_20p"   # Donde saldrá todo ordenado
+CARPETA_ROBOFLOW = "../data/datasets/roboflow_dataset"  # Carpeta lista para arrastrar a Roboflow
 CONFIANZA = 0.25                    # Nivel de exigencia
 # ==========================================
 
 def main():
     # 1. Cargar modelo
-    ruta_modelo = "runs/detect/trained_sperm_model/weights/best.pt"
+    ruta_modelo = "../models/trained/runs/detect/trained_sperm_model/weights/best.pt"
     
     if not os.path.exists(ruta_modelo):
         print("❌ No encuentro el modelo 'best.pt'.")

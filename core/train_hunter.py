@@ -4,9 +4,10 @@ import sys
 import torch
 
 def encontrar_yaml():
-    """Busca automáticamente el archivo data.yaml en subcarpetas."""
+    """Busca automáticamente el archivo data.yaml en subcarpetas de datasets."""
     print("🔍 Buscando archivo de configuración del dataset (data.yaml)...")
-    for root, dirs, files in os.walk("."):
+    ruta_datasets = os.path.join("..", "data", "datasets")
+    for root, dirs, files in os.walk(ruta_datasets):
         if "data.yaml" in files:
             ruta_completa = os.path.join(root, "data.yaml")
             print(f"   -> Encontrado: {ruta_completa}")
@@ -19,13 +20,13 @@ def main():
     
     if yaml_path is None:
         print("\n❌ ERROR: No se encontró 'data.yaml'.")
-        print("   -> ¿Ya ejecutaste 'python descargar_data.py'?")
+        print("   -> Asegúrate de que el dataset esté en '../data/datasets/'")
         sys.exit(1)
 
     # 2. Cargar Modelo Base
     # Usamos YOLOv8 Small (s) para mejor detección de objetos pequeños como espermas
     print("\n📦 Cargando modelo YOLOv8 Small...")
-    model = YOLO('yolov8s.pt')
+    model = YOLO('../models/yolov8s.pt')
 
     # 3. Selección de dispositivo (GPU si disponible, si no CPU)
     use_cuda = torch.cuda.is_available()
@@ -51,7 +52,7 @@ def main():
             
             # --- Ajustes de Entrenamiento ---
             patience=40,     # Early Stopping: Si no mejora en 40 épocas, para.
-            project='runs/detect',
+            project='../models/trained/runs/detect',
             name='trained_sperm_model',
             exist_ok=True,   # Sobrescribe si ya existe la carpeta para no llenar disco
             augment=True,    # Vital para pocos datos: crea variaciones artificiales

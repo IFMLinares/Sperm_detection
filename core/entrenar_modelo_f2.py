@@ -5,8 +5,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 # --- ⚙️ CONFIGURACIÓN ---
-DATASET_PATH = 'dataset_f2' 
-OUTPUT_DIR = 'runs/clasificacion/experimento_1'
+DATASET_PATH = '../data/datasets/dataset_f2' 
+OUTPUT_DIR = '../models/trained/clasificacion/experimento_1'
 IMG_SIZE = 224
 BATCH_SIZE = 16 # Batch más pequeño para dataset pequeño
 EPOCHS = 50     # Subimos épocas porque usaremos Early Stopping

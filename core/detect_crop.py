@@ -6,7 +6,7 @@ import glob
 # CONFIGURACIÓN
 # ==========================================
 # Carpeta donde pondrás tus fotos de microscopio
-CARPETA_ORIGEN = "my_images"
+CARPETA_ORIGEN = "../data/raw/my_images"
 # Nombre del proyecto de salida
 NOMBRE_SALIDA = "result_fase_1_1"
 # Umbral de confianza (0.25 a 0.5 suele estar bien)
@@ -33,6 +33,13 @@ def main():
     if not archivos:
         print(f"La carpeta '{CARPETA_ORIGEN}' está vacía.")
         return
+    # 1. Buscar el modelo entrenado automáticamente
+    ruta_modelo = "../models/trained/runs/detect/trained_sperm_model/weights/best.pt"
+    
+    if not os.path.exists(ruta_modelo):
+        print(f"ERROR: No encuentro el modelo en {ruta_modelo}")
+        print("   -> ¿Terminó el entrenamiento?")
+        return
 
     print(f"🚀 Iniciando detección en {len(archivos)} imágenes...")
     print(f"   -> Modelo: {ruta_modelo}")
@@ -51,14 +58,15 @@ def main():
         iou=0.3,    # <--- Filtro para evitar detecciones dobles o fraccionadas
         save=True,
         save_crop=True, 
-        project="runs/detect",
+        project="../models/trained/runs/detect",
         name=NOMBRE_SALIDA,
         exist_ok=True
     )
 
     print("\n PROCESO TERMINADO!")
-    print(f"1. Fotos con cuadros dibujados: runs/detect/{NOMBRE_SALIDA}/")
-    print(f"2. ESPERMAS RECORTADOS:        runs/detect/{NOMBRE_SALIDA}/crops/sperm/")
+    output_path = f"../models/trained/runs/detect/{NOMBRE_SALIDA}"
+    print(f"1. Fotos con cuadros dibujados: {output_path}/")
+    print(f"2. ESPERMAS RECORTADOS:        {output_path}/crops/sperm/")
     print("\nVe a la carpeta 'crops' y revisa si recortó bien tus espermas.")
 
 if __name__ == "__main__":

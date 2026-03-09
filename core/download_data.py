@@ -29,7 +29,14 @@ try:
 
     # 3. Descarga
     print("   -> Descargando dataset (esto puede tardar un poco)...")
+    original_cwd = os.getcwd()
+    target_dir = os.path.join("..", "data", "datasets")
+    os.makedirs(target_dir, exist_ok=True)
+    os.chdir(target_dir)
+    
     dataset = version.download("yolov8")
+    
+    os.chdir(original_cwd)
 
     print("\n✅ ¡ÉXITO! Dataset descargado.")
     print(f"   -> Las imágenes están en: {dataset.location}")
