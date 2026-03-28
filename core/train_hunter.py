@@ -4,10 +4,19 @@ import sys
 import torch
 
 def encontrar_yaml():
-    """Busca automáticamente el archivo data.yaml en subcarpetas de datasets."""
+    """Busca automáticamente el archivo data.yaml, priorizando el dataset unificado."""
     print("🔍 Buscando archivo de configuración del dataset (data.yaml)...")
+    
+    # Prioridad 1: Dataset Unificado
+    ruta_unificado = os.path.join("..", "data", "datasets", "dataset_yolo_unificado", "data.yaml")
+    if os.path.exists(ruta_unificado):
+        print(f"   -> Encontrado (Unificado): {ruta_unificado}")
+        return ruta_unificado
+
+    # Prioridad 2: Otros datasets en subcarpetas
     ruta_datasets = os.path.join("..", "data", "datasets")
     for root, dirs, files in os.walk(ruta_datasets):
+        if "data_yolo_unificado" in root: continue # evitar duplicar si ya lo buscamos
         if "data.yaml" in files:
             ruta_completa = os.path.join(root, "data.yaml")
             print(f"   -> Encontrado: {ruta_completa}")

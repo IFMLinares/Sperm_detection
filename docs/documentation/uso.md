@@ -21,21 +21,27 @@ python download_data.py
 ## Entrenamientos
 
 **Fase 1 (YOLO - Detección):**
+```bash
+python core/train_hunter.py
 ```
-python train_hunter.py
-```
-Salida esperada: `runs/detect/trained_sperm_model/weights/best.pt`.
+Salida esperada: El mejor modelo se guarda automáticamente en `runs/detect/`.
 
-**Fase 2 (Keras - Clasificación de Morfología):**
+**Fase 2 (Morfología - Clasificación):**
+```bash
+python core/entrenar_morfologia.py
 ```
-python entrenar_modelo_f2.py
+Salida esperada: `models/trained/clasificacion/experimento_5/mejor_modelo_v8.h5`.
+
+**Validación Técnica (Métricas de Tesis):**
+```bash
+python core/calcular_kappa.py
 ```
-Salida esperada: `runs/clasificacion/experimento_1/clasificador_morfologia_v1.keras` junto con su reporte visual.
+Genera un análisis estadístico de 100 muestras con el índice Kappa de Cohen.
 
 ## Análisis Full (Recomendado)
-Para aplicar tanto YOLO (Detección) como Keras (Morfología) sobre tus imágenes y generar reportes visuales con conteos:
-```
-python analizador_completo.py
+Para aplicar tanto YOLO (Detección) como EfficientNetB0 (Morfología) sobre tus imágenes:
+```bash
+python core/analizador_completo.py
 ```
 - Imágenes procesadas con bounding boxes y resúmenes: `pruebas/resultados_20p/`
 

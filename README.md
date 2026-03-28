@@ -1,85 +1,71 @@
-# **🧬 Detección de Espermatozoides con IA (Fases 1 y 2)**
+# **🧬 Detección y Clasificación de Espermatozoides con IA (Fases 1 y 2)**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![YOLOv8](https://img.shields.io/badge/Ultralytics-YOLOv8-3776AB)
-![TensorFlow](https://img.shields.io/badge/TensorFlow%20Keras-MobileNetV2-FF6F00)
+![YOLOv11](https://img.shields.io/badge/Ultralytics-YOLOv11-3776AB)
+![TensorFlow](https://img.shields.io/badge/TensorFlow%20Keras-EfficientNetB0-FF6F00)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Este proyecto implementa un sistema de Visión Artificial basado en los estándares del **Manual de la OMS (2021)** para el análisis de semen.
+Este proyecto implementa un sistema de Visión Artificial de grado clínico basado en los estándares del **Manual de la OMS (2021)** y morfología estricta de **Kruger**.
 
-**Objetivo de la Fase 1:** Detectar y recortar automáticamente espermatozoides individuales en imágenes de microscopía (100x) utilizando **YOLOv8**.
-**Objetivo de la Fase 2:** Clasificar la morfología de los espermatozoides detectados (Normal/Anormal) usando **Keras y MobileNetV2**, generando un reporte visual integrado por muestra.
+**Objetivo de la Fase 1:** Detección y localización automática en imágenes de microscopía (100x) utilizando **YOLOv11**.
+**Objetivo de la Fase 2:** Clasificación de morfología multietiqueta (Normal + 4 tipos de anomalías) usando **EfficientNetB0 + Focal Loss**, validado con el índice **Cohen's Kappa**.
 
-Ambas fases aprovechan aceleración por GPU (NVIDIA RTX 3080).
+---
 
 ## **📋 Requisitos y Configuración**
 
-Resumen rápido; guía completa en [documentation/instalacion_windows.md](documentation/instalacion_windows.md).
-- Miniconda o Anaconda, VS Code, drivers NVIDIA (si usarás GPU).
-- Crea el entorno e instala dependencias:
-```
+1. **Entorno Conda:**
+```bash
 conda create -n tesis_espermas python=3.10 -y
 conda activate tesis_espermas
 pip install -r requirements.txt
 ```
-
-Para problemas de PATH, permisos y ToS, ver [documentation/instalacion_windows.md](documentation/instalacion_windows.md) y [documentation/troubleshooting.md](documentation/troubleshooting.md).
-
-## **🚀 Quickstart**
-
-### Preparación de Datos
-1) Instala dependencias: `pip install -r requirements.txt`
-2) Configura tu API Key en `.env` para la Fase 1 (ver [documentation/dataset.md](documentation/dataset.md)).
-3) Descarga dataset de Fase 1: `python download_data.py`. Asegúrate de tener listo el `dataset_f2` para la Fase 2.
-
-### Entrenamiento
-4) Entrena el Detector (Fase 1 - YOLO): `python train_hunter.py`
-5) Entrena el Clasificador (Fase 2 - Keras): `python entrenar_modelo_f2.py`
-
-### Ejecución
-6) Análisis Completo (Fase 1 + Fase 2): `python analizador_completo.py`
-*Alternativamente, usando solo componentes de la Fase 1:*
-- Detectar y recortar (YOLO): `python detect_crop.py`
-- Organizar para anotación asistida (YOLO): `python detect_organize.py`
-
-## **📚 Documentación**
-- [Guía de Uso](documentation/uso.md)
-- [Instalación en Windows](documentation/instalacion_windows.md)
-- [Datasets (`.env` y Fase 2)](documentation/dataset.md)
-- [Entrenamiento (YOLO y Keras)](documentation/entrenamiento.md)
-- [Resultados](documentation/resultados.md)
-- [Arquitectura](documentation/arquitectura.md)
-- [FAQ](documentation/faq.md) · [Troubleshooting](documentation/troubleshooting.md)
-
-## **🧠 Entrenamiento y Detección**
-- Detalles de entrenamiento (YOLO y MobileNetV2): ver [documentation/entrenamiento.md](documentation/entrenamiento.md).
-- Tiempos de inferencia, inferencia acoplada y organización: ver [documentation/uso.md](documentation/uso.md) y [documentation/resultados.md](documentation/resultados.md).
+2. **Hardware:** Recomendado NVIDIA GPU (RTX 3080/4090) con CUDA/cuDNN configurado.
 
 ---
-Para errores y soluciones, consulta [documentation/troubleshooting.md](documentation/troubleshooting.md).
 
-## **📂 Estructura del Proyecto**
+## **🚀 Workflow del Proyecto**
 
-Una vez ejecutados los scripts y generados los reportes, tu carpeta principal debería verse así:
+### 1. Preparación de Datos
+- **Descarga:** `python core/download_data.py`
+- **Pre-procesamiento:** `python core/preparar_dataset_morfologia.py` (Genera los crops multietiqueta de 300px).
+
+### 2. Entrenamiento (Estrategia v8 Ganadora)
+- **Fase 1 (YOLO):** `python core/train_hunter.py`
+- **Fase 2 (Morfología):** `python core/entrenar_morfologia.py`
+  - Utiliza **EfficientNetB0**, **Focal Loss** y **Oversampling Físico** para manejar el desbalance de clases.
+  - Los mejores pesos se guardan en: `models/trained/clasificacion/experimento_5/mejor_modelo_v8.h5`.
+
+### 3. Validación y Métricas
+- **Cálculo de Kappa:** `python core/calcular_kappa.py`
+  - Protocolo de Tesis: Pool de validación (10%) -> Muestra aleatoria de 100 células.
+  - Genera: Matriz de Confusión, Sensibilidad, Especificidad, Accuracy, VPP, VPN y F1-Score.
+
+---
+
+## **📂 Estructura del Proyecto Consolidado**
 
 ```
-DetectorEspermas/  
+SpermDetection/  
 │  
-├── README.md               # Este archivo de documentación  
-├── download_data.py        # Descarga dataset Fase 1
-├── train_hunter.py         # Entrena YOLOv8 (Fase 1)
-├── entrenar_modelo_f2.py   # Entrena Keras/MobileNetV2 (Fase 2)
-├── detect_crop.py          # Detección y recortes YOLO (Base)
-├── detect_organize.py      # Ordena resultados YOLO
-├── analizador_completo.py  # Acopla YOLO y Keras para análisis full
+├── core/                   # Scripts principales de IA
+│   ├── entrenar_morfologia.py    # Training oficial v8
+│   ├── calcular_kappa.py        # Validación clínica oficial
+│   └── analizador_completo.py    # Inferencia acoplada
 │
-├── my_images/              # Tus imágenes de microscopio a evaluar 
-├── dataset_f2/             # Dataset clasificado Normal/Anormal (Fase 2)
+├── models/
+│   └── trained/
+│       └── clasificacion/
+│           └── experimento_5/     # Carpeta del MODELO GANADOR (v8)
+│               └── mejor_modelo_v8.h5
 │
-├── runs/                   # RESULTADOS DE ENTRENAMIENTO
-│   ├── detect/             # Modelos YOLO
-│   └── clasificacion/      # Modelos Keras
-│  
-└── pruebas/  
-    └── resultados_20p/     # Output visual del analizador_completo.py
+├── docs/                   # Documentación y Resultdos
+│   └── RESULTADOS_TESIS.md  # Reporte formal para sustentación
+│
+└── data/
+    └── datasets/
+        └── dataset_morfologia_v3/ # Dataset final multietiqueta
 ```
+
+---
+*Este repositorio ha sido consolidado para la entrega final de tesis, eliminando versiones experimentales obsoletas.*

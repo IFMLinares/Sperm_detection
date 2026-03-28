@@ -1,12 +1,8 @@
 # Entrenamiento de Modelos
 
-Este proyecto entrena dos modelos independientes: un **detector de objetos (YOLO)** para ubicar espermatozoides (Fase 1) y un **clasificador de morfología (Keras/MobileNetV2)** para determinar si son normales o anormales (Fase 2).
+Este proyecto entrena dos modelos independientes: un **detector de objetos (YOLO)** para ubicar espermatozoides (Fase 1) y un **clasificador de morfología multietiqueta (Keras/EfficientNetB0)** para identificar anomalías específicas (Fase 2).
 
-## Fase 1: Entrenamiento del Detector (YOLOv8)
-Este modelo permite identificar dónde hay un espermatozoide.
-
-- Preferido: `yolov8s.pt` (buena precisión en objetos pequeños).
-- Alternativa: `yolo11n.pt` (más rápido, menos preciso).
+- Preferido: `yolo11n.pt` o `yolo11s.pt` (Arquitectura YOLOv11).
 
 **Ejecución:**
 ```
@@ -19,23 +15,22 @@ python train_hunter.py
   - `runs/detect/trained_sperm_model/weights/best.pt`: mejor modelo.
   - `runs/detect/trained_sperm_model/weights/last.pt`: último checkpoint.
 
-## Fase 2: Entrenamiento del Clasificador (Keras/MobileNetV2)
-Este modelo analiza los recortes generados por la Fase 1 y clasifica y dictamina la morfología.
+## Fase 2: Entrenamiento del Clasificador (EfficientNetB0)
+Este modelo analiza los recortes de 300x300px y clasifica 5 categorías simultáneamente (Multietiqueta).
 
-**Modelo base:** MobileNetV2 pre-entrenado en `ImageNet` (Transfer Learning), congelando sus capas base y añadiendo top layers especializadas (GlobalAveragePooling, Dropout(0.3) y Dense Sigmoid).
+**Modelo base:** EfficientNetB0 pre-entrenado, utilizando una cabecera personalizada con `GlobalAveragePooling2D` y una capa `Dense` con activación `Sigmoid` para permitir múltiples etiquetas por célula.
 
 **Ejecución:**
+```bash
+python core/entrenar_morfologia.py
 ```
-python entrenar_modelo_f2.py
-```
-- Carga el dataset de recortes desde la carpeta `dataset_f2`.
-- Realiza **Data Augmentation** dinámico (Flip, Rotación Aleatoria, Zoom Aleatorio) con capa Keras.
-- Ajusta el redimensionado (`resize_with_pad` a 224x224) preservando proporciones originales.
-- Maneja intrínsecamente el **Desequilibrio de Clases** dictando los pesos (p. ej., `class_weight={0: 3.6, 1: 1.0}`).
-- **Hiperparámetros**: Óptimizador `Adam(1e-4)`, activador `Sigmoid` con pérdida `binary_crossentropy`, `batch_size=16`, `epochs=50`. Early Stopping en `patience=10`.
+- **Técnicas Avanzadas (v8):**
+  - **Focal Loss:** Se utiliza `MultiLabelFocalLoss` para dar más peso a los ejemplos difíciles (anomalías raras) y reducir el impacto de ejemplos fáciles.
+  - **Oversampling Físico:** El dataset se balancea antes de entrar a la red mediante la duplicación física de muestras de clases minoritarias.
+  - **Resolución:** Se estandariza a **300x300px** para capturar detalles finos de la pieza intermedia y vacuolas.
 - **Salidas**: 
-  - `runs/clasificacion/experimento_1/clasificador_morfologia_v1.keras`.
-  - Reporte visual (`runs/clasificacion/experimento_1/reporte_entrenamiento.png`).
+  - `models/trained/clasificacion/experimento_5/mejor_modelo_v8.h5`.
+  - Reporte de métricas y curvas de aprendizaje en la carpeta del experimento.
 
 ## Recomendaciones Generales
 - "CUDA Out of Memory": reduce el `BATCH_SIZE` según el modelo empleado.
