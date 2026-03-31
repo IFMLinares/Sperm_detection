@@ -168,18 +168,71 @@ $$\kappa = \frac{p_o - p_e}{1 - p_e}$$
 - **Justificación Lógica:** Valida científicamente que el modelo ha aprendido patrones morfológicos reales y no está adivinando estadísticamente.
 
 ## 9. Índice de Teratozoospermia (TZI)
-El **TZI** es un indicador clínico fundamental que mide el grado de polimorfismo de la muestra, cuantificando cuántas anomalías se presentan por cada espermatozoide anormal.
+El **TZI** es un indicador clínico fundamental que mide el grado de polimorfismo de la muestra, cuantificando cuántas anomalías se presentan por cada espermatozoide anormal. A diferencia del porcentaje de morfología normal (que es binario: sano/enfermo), el TZI ofrece una visión de la **severidad** de la patología.
 
-- **Fórmula de Cálculo:** 
-  $$TZI = \frac{\text{Suma total de defectos (Cabeza, P. Intermedia, Cola, R. Citoplasm.)}}{\text{Número total de espermatozoides con al menos una anomalía}}$$
+### 9.1 Lógica de Aplicación del TZI en el Algoritmo
+El cálculo del TZI en el sistema Antigravity v8 no es una salida directa de la red neuronal, sino el resultado de un proceso de **Post-procesamiento Estadístico** que sigue estos pasos lógicos:
 
-### Resultados Obtenidos (Pool 100 células)
+1.  **Inferencia Multietiqueta:** La red **EfficientNetB0** entrega un vector de 5 probabilidades independientes (0.0 a 1.0).
+2.  **Binarización por Umbral ($\tau$):** Cada probabilidad se convierte en presencia (1) o ausencia (0) de defecto aplicando un umbral optimizado para maximizar el Índice Kappa.
+    $$y_{i,c} = \begin{cases} 1 & \text{si } P(i,c) > \tau_c \\ 0 & \text{en caso contrario} \end{cases}$$
+    *Donde $i$ es la célula y $c$ es la categoría del defecto (Cabeza, Cola, P. Intermedia, Residuo).*
+3.  **Extracción de Defectos Acumulados ($D$):** Se suman las activaciones de las 4 clases de anomalías ignorando la clase "Normal".
+4.  **Identificación de Células Anormales ($N_z$):** Se identifican las células que tienen al menos un defecto ($D_i > 0$).
+
+### 9.2 Diagrama de Flujo del Cálculo TZI (Algoritmo v8)
+El siguiente diagrama detalla cómo los datos de la red neuronal se transforman en el indicador clínico final:
+
+```mermaid
+graph TD
+    subgraph "SALIDA DE RED NEURONAL (INFERENCIA)"
+        SOFT["<b>VECTOR SIGMOIDE</b><br/>[P_cabeza, P_cola, P_pieza, P_residuos]"]
+    end
+
+    subgraph "POST-PROCESAMIENTO LÓGICO"
+        TH["<b>UMBRALIZACIÓN (Thresholding)<b><br/>(Apply τ_optimal per class)"]
+        BIN["<b>VECTOR BINARIO</b><br/>[0, 1, 1, 0]"]
+        SUM["<b>AGREGACIÓN INDIVIDUAL</b><br/>D_i = Σ bin_c"]
+    end
+
+    subgraph "NÚCLEO ESTADÍSTICO (ACUMULADOR)"
+        ACC_D["<b>TOTAL DEFECTOS (Σ D_i)</b>"]
+        ACC_N["<b>CÉLULAS ANORMALES (D_i > 0)</b>"]
+    end
+
+    subgraph "INDICADOR CLÍNICO FINAL"
+        TZI_F{{"<b>TZI = Σ D_i / N_anormales</b>"}}
+    end
+
+    SOFT ==> TH
+    TH ==> BIN
+    BIN ==> SUM
+    SUM ==> ACC_D
+    SUM ==> ACC_N
+    ACC_D & ACC_N ==> TZI_F
+
+    %% Estilos
+    classDef inference fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef logic fill:#cce6ff,stroke:#004080,stroke-width:2px;
+    classDef stats fill:#ffe0b3,stroke:#804000,stroke-width:2px;
+    classDef final fill:#ccffcc,stroke:#006600,stroke-width:3px;
+    
+    class SOFT inference;
+    class TH,BIN,SUM logic;
+    class ACC_D,ACC_N stats;
+    class TZI_F final;
+```
+
+### 9.3 Resultados Obtenidos (Pool 100 células)
 - **TZI Referencia (Experto):** **2.4382**
 - **TZI Calculado (IA):** **2.9080**
 - **Desviación Absoluta:** **0.4698** (Justificado por el criterio estricto del modelo).
 
-### Justificación Clínica para la Tesis
-El TZI predice la función espermática tanto *in vivo* como *in vitro*. Un TZI de **2.90** en la IA indica que el sistema detecta, en promedio, casi 3 defectos por cada célula anormal registrada, lo cual es coherente con una muestra de alta severidad polimórfica. La mayor sensibilidad del modelo (detectando 0.47 defectos adicionales por célula frente al experto) refuerza su utilidad como herramienta de "screening" masivo, asegurando que ninguna micro-anomalía pase desapercibida en el análisis de fertilidad.
+### 9.4 Justificación Clínica para la Tesis
+El TZI predice la función espermática tanto *in vivo* como *in vitro*. Un TZI de **2.90** en la IA indica que el sistema detecta, en promedio, casi 3 defectos por cada célula anormal registrada, lo cual es coherente con una muestra de alta severidad polimórfica. 
+
+**¿Por qué es superior al % de Normalidad?**
+Mientras que el porcentaje de normalidad solo dice si una célula es apta o no, el TZI revela la **complejidad del defecto**. Un TZI elevado (>1.6) suele asociarse clínicamente con fallos en la reacción acrosómica o en la penetración de la zona pelúcida, otorgando al algoritmo un valor pronóstico añadido para el diagnóstico de infertilidad masculina.
 
 ---
 *Fin del reporte de validación estadística - Versión 8.5*
