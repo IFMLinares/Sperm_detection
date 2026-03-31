@@ -1,0 +1,103 @@
+
+# >>>>>>>>>>>>>>>>>>>>>> ERROR REPORT <<<<<<<<<<<<<<<<<<<<<<
+
+    Traceback (most recent call last):
+      File "C:\Users\ifmlinares\miniconda3\Lib\site-packages\conda\exception_handler.py", line 28, in __call__
+        return func(*args, **kwargs)
+      File "C:\Users\ifmlinares\miniconda3\Lib\site-packages\conda\cli\main.py", line 61, in main_subshell
+        exit_code = do_call(args, parser)
+      File "C:\Users\ifmlinares\miniconda3\Lib\site-packages\conda\cli\conda_argparse.py", line 206, in do_call
+        result = getattr(module, func_name)(args, parser)
+      File "C:\Users\ifmlinares\miniconda3\Lib\site-packages\conda\cli\main_run.py", line 120, in execute
+        print(response.stdout, file=sys.stdout)
+        ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "C:\Users\ifmlinares\miniconda3\Lib\encodings\cp1252.py", line 19, in encode
+        return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    UnicodeEncodeError: 'charmap' codec can't encode character '\ufffd' in position 65: character maps to <undefined>
+
+`$ C:\Users\ifmlinares\miniconda3\Scripts\conda-script.py run -n tesis_espermas python core/calcular_kappa.py`
+
+  environment variables:
+                AMDRMPATH=C:\Program Files\AMD\RyzenMaster\
+     BUNDLED_DEBUGPY_PATH=c:\Users\ifmlinares\.antigravity\extensions\ms-
+                          python.debugpy-2025.18.0\bundled\libs\debugpy
+                 CIO_TEST=<not set>
+                CONDA_EXE=C:\Users\ifmlinares\miniconda3\Scripts\conda.exe
+               CONDA_ROOT=C:\Users\ifmlinares\miniconda3
+           CURL_CA_BUNDLE=C:\Program Files\PostgreSQL\17\ssl\certs\ca-bundle.crt
+                 HOMEPATH=\Users\ifmlinares
+               LD_PRELOAD=<not set>
+                     PATH=C:\Program Files\WindowsApps\Microsoft.PowerShell_7.4.6.0_x64__8wekyb3
+                          d8bbwe;C:\Program Files\Common Files\Oracle\Java\javapath;C:\ProgramDa
+                          ta\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\Syst
+                          em32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\Syste
+                          m32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Microsoft VS
+                          Code\bin;C:\Program Files\PuTTY\;C:\Program
+                          Files\Docker\Docker\resources\bin;E:\Program Files\nodejs\;C:\Program
+                          Files\GTK3-Runtime Win64\bin;C:\Program Files\Tailscale\;C:\Program
+                          Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files
+                          (x86)\NVIDIA Corporation\PhysX\Common;C:\Redis;C:\Program Files\dotnet
+                          \;C:\Users\ifmlinares\AppData\Local\Programs\Ollama;C:\Users\ifmlinare
+                          s\miniconda3;C:\Users\ifmlinares\miniconda3\Scripts;C:\Users\ifmlinare
+                          s\miniconda3\Library\bin;C:\Users\ifmlinares\AppData\Local\Programs\Mi
+                          crosoft VS Code\bin;C:\Users\ifmlinares\AppData\Local\Programs\Antigra
+                          vity\bin;c:\Users\ifmlinares\.antigravity\extensions\ms-
+                          python.debugpy-2025.18.0\bundled\scripts\noConfigScripts
+             PSMODULEPATH=C:\Users\ifmlinares\Documents\PowerShell\Modules;C:\Program
+                          Files\PowerShell\Modules;c:\program files\windowsapps\microsoft.powers
+                          hell_7.4.6.0_x64__8wekyb3d8bbwe\Modules;C:\Program Files\WindowsPowerS
+                          hell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+            PYTHONSTARTUP=c:\Users\ifmlinares\AppData\Roaming\Antigravity\User\workspaceStorage\
+                          f59e200a96cf98bfa90facf9e370faee\ms-python.python\pythonrc.py
+        PYTHON_BASIC_REPL=1
+       REQUESTS_CA_BUNDLE=<not set>
+            SSL_CERT_FILE=<not set>
+
+     active environment : None
+       user config file : C:\Users\ifmlinares\.condarc
+ populated config files : C:\Users\ifmlinares\miniconda3\.condarc
+                          C:\Users\ifmlinares\.condarc
+          conda version : 25.5.1
+    conda-build version : not installed
+         python version : 3.13.5.final.0
+                 solver : libmamba (default)
+       virtual packages : __archspec=1=x86_64_v3
+                          __conda=25.5.1=0
+                          __cuda=13.1=0
+                          __win=10.0.26100=0
+       base environment : C:\Users\ifmlinares\miniconda3  (writable)
+      conda av data dir : C:\Users\ifmlinares\miniconda3\etc\conda
+  conda av metadata url : None
+           channel URLs : https://repo.anaconda.com/pkgs/main/win-64
+                          https://repo.anaconda.com/pkgs/main/noarch
+                          https://repo.anaconda.com/pkgs/r/win-64
+                          https://repo.anaconda.com/pkgs/r/noarch
+                          https://repo.anaconda.com/pkgs/msys2/win-64
+                          https://repo.anaconda.com/pkgs/msys2/noarch
+          package cache : C:\Users\ifmlinares\miniconda3\pkgs
+                          C:\Users\ifmlinares\.conda\pkgs
+                          C:\Users\ifmlinares\AppData\Local\conda\conda\pkgs
+       envs directories : C:\Users\ifmlinares\miniconda3\envs
+                          C:\Users\ifmlinares\.conda\envs
+                          C:\Users\ifmlinares\AppData\Local\conda\conda\envs
+               platform : win-64
+             user-agent : conda/25.5.1 requests/2.32.4 CPython/3.13.5 Windows/11 Windows/10.0.26100 solver/libmamba conda-libmamba-solver/25.4.0 libmambapy/2.0.5
+          administrator : False
+             netrc file : None
+           offline mode : False
+
+
+An unexpected error has occurred. Conda has prepared the above report.
+If you suspect this error is being caused by a malfunctioning plugin,
+consider using the --no-plugins option to turn off plugins.
+
+Example: conda --no-plugins install <package>
+
+Alternatively, you can set the CONDA_NO_PLUGINS environment variable on
+the command line to run the command without plugins enabled.
+
+Example: CONDA_NO_PLUGINS=true conda install <package>
+
+If submitted, this report will be used by core maintainers to improve
+future releases of conda.
