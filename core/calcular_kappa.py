@@ -92,6 +92,22 @@ for i, clase in enumerate(CLASES):
     f1 = 2 * (vpp * sens) / (vpp + sens) if (vpp + sens) > 0 else 0
     print(f"{clase:<22} | {tp:^3} | {tn:^3} | {fp:^3} | {fn:^3} | {acc:.4f} | {sens:.4f} | {espec:.4f} | {vpp:.4f} | {vpn:.4f} | {f1:.4f}")
 
+# --- 🧪 CÁLCULO DEL ÍNDICE DE TERATOZOOSPERMIA (TZI) ---
+# TZI = Total de defectos / Número de espermatozoides con al menos un defecto
+def calcular_tzi(labels_matrix):
+    # Ignoramos la primera columna (índice 0) que es "normal"
+    defectos_por_celula = np.sum(labels_matrix[:, 1:], axis=1)
+    total_defectos = np.sum(defectos_por_celula)
+    num_celulas_con_defectos = np.sum(defectos_por_celula > 0)
+    
+    if num_celulas_con_defectos == 0: return 1.0
+    return total_defectos / num_celulas_con_defectos
+
+tzi_expert = calcular_tzi(y_true)
+tzi_ai     = calcular_tzi(y_pred_opt)
+
 print("-" * 100)
 print(f"{'ÍNDICE KAPPA MACRO':<22} | {np.mean(kappas):>10.4f}")
+print(f"{'TZI (EXPERTO AGENCIA)':<22} | {tzi_expert:>10.4f}")
+print(f"{'TZI (IA ANTIGRAVITY)':<22} | {tzi_ai:>10.4f}")
 print("="*100)
