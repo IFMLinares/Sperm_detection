@@ -4,19 +4,25 @@ import tensorflow as tf
 from ultralytics import YOLO
 import os
 import glob
-import json
+from pathlib import Path
 
 # --- ⚙️ CONFIGURACIÓN DE RUTAS ---
-# Usamos el modelo más reciente si existe, sino el anterior
-MODELO_YOLO = "../models/trained/runs/detect/trained_sperm_model/weights/best.pt"
-MODELO_KERAS = "../models/trained/clasificacion/experimento_3/clasificador_morfologia_v3.keras"
-CLASES_JSON = "../models/trained/clasificacion/experimento_3/clases.json"
+BASE_DIR = Path(__file__).parent.parent
 
-DIR_PRUEBAS = "../data/raw/my_images"
-DIR_RESULTADOS = "../docs/pruebas/resultados_v3"
+MODELO_YOLO = str(BASE_DIR / "models/trained/runs/detect/trained_sperm_model/weights/best.pt")
+MODELO_KERAS = str(BASE_DIR / "models/trained/clasificacion/experimento_5/mejor_modelo_v8.h5")
 
-IMG_SIZE = 224 # Tamaño para el clasificador Keras
-UMBRAL_MORFOLOGIA = 0.4 # Confianza mínima para etiquetar un defecto (0.1 a 0.9)
+DIR_PRUEBAS = str(BASE_DIR / "data/raw/muestras_variadas")
+DIR_RESULTADOS = str(BASE_DIR / "docs/pruebas/muestras_variadas_reporte")
+
+IMG_SIZE = 300
+UMBRAL_MORFOLOGIA = 0.5 
+
+# Forzar salida UTF-8 para evitar errores en Windows
+import sys
+import io
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # --- 🛠️ FUNCIONES PERSONALIZADAS (Para cargar el modelo v3) ---
 def weighted_binary_crossentropy(y_true, y_pred):
     return tf.keras.backend.binary_crossentropy(y_true, y_pred)
@@ -37,29 +43,31 @@ if not os.path.exists(MODELO_YOLO):
 detector = YOLO(MODELO_YOLO)
 
 if os.path.exists(MODELO_KERAS):
-    try:
-        clasificador = tf.keras.models.load_model(
-            MODELO_KERAS,
-            custom_objects={'weighted_binary_crossentropy': weighted_binary_crossentropy}
-        )
-    except Exception:
-        clasificador = tf.keras.models.load_model(MODELO_KERAS)
-    # Cargar nombres de clases
-    if os.path.exists(CLASES_JSON):
-        with open(CLASES_JSON, "r", encoding="utf-8") as f:
-            CLASES = json.load(f)
-    else:
-        CLASES = ["normal", "cabeza", "cola", "pieza_int", "residuo"]
+    # El modelo v8 usa pesos (.h5) y requiere definir la arquitectura (EfficientNetB0)
+    print("🧠 Construyendo arquitectura EfficientNetB0 para v8...")
+    from tensorflow.keras import layers, models
+    
+    base_model = tf.keras.applications.EfficientNetB0(
+        input_shape=(IMG_SIZE, IMG_SIZE, 3), 
+        include_top=False, 
+        weights=None
+    )
+    
+    inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+    x = base_model(inputs)
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Dense(512, activation="relu")(x)
+    x = layers.Dropout(0.4)(x)
+    outputs = layers.Dense(5, activation="sigmoid")(x)
+    
+    clasificador = models.Model(inputs, outputs)
+    clasificador.load_weights(MODELO_KERAS)
+    
+    CLASES = ["normal", "cabeza_anormal", "cola_anormal", "pieza_intermedia_anormal", "residuo_citoplasmatico"]
 else:
-    print(f"⚠️ No se encontró el modelo Keras v3 en: {MODELO_KERAS}")
-    print("Usando modo de compatibilidad con modelo v1 si existe...")
-    MODELO_KERAS_V1 = "../models/trained/clasificacion/experimento_1/clasificador_morfologia_v1.keras"
-    if os.path.exists(MODELO_KERAS_V1):
-        clasificador = tf.keras.models.load_model(MODELO_KERAS_V1)
-        CLASES = ["normal"] 
-    else:
-        print("❌ Ningún modelo de clasificación encontrado.")
-        exit()
+    print(f"❌ No se encontró el modelo Keras v8 en: {MODELO_KERAS}")
+    exit()
 
 # --- 🖼️ 2. PROCESAR TODAS LAS IMÁGENES ---
 imagenes = glob.glob(os.path.join(DIR_PRUEBAS, "*.*"))
@@ -111,29 +119,25 @@ for ruta_img in imagenes:
         defectos_detectados = []
         es_normal = False
         
-        # Si el modelo es v3 (multi-label)
-        if len(preds) > 1:
-            # Usar el umbral personalizado para detectar defectos
-            for idx, prob in enumerate(preds):
-                if prob > UMBRAL_MORFOLOGIA:
-                    stats[CLASES[idx]] += 1
-                    if CLASES[idx] == "normal":
-                        es_normal = True
-                    else:
-                        defectos_detectados.append(CLASES[idx].replace("_anormal", ""))
-        else:
-            # Compatibilidad con modelo v1 (binario)
-            es_normal = preds[0] > 0.5
-            if es_normal: stats["normal"] += 1
+        # Si el modelo es v8 (multi-label)
+        for idx, prob in enumerate(preds):
+            if prob > UMBRAL_MORFOLOGIA:
+                stats[CLASES[idx]] += 1
+                if CLASES[idx] == "normal":
+                    es_normal = True
+                else:
+                    # Formatear nombre para el label visual
+                    clean_name = CLASES[idx].split("_")[0].upper()
+                    defectos_detectados.append(clean_name)
         
         # Elegir color y etiqueta visual
         if es_normal and not defectos_detectados:
             color = (0, 255, 0) # Verde
             label_txt = "NORMAL"
         else:
-            color = (0, 0, 255) # Rojo
+            color = (0, 100, 255) # Naranja/Rojo suave para defectos
             if defectos_detectados:
-                label_txt = ",".join(defectos_detectados).upper()
+                label_txt = "|".join(defectos_detectados)
             else:
                 label_txt = "ANORMAL"
 
@@ -142,35 +146,55 @@ for ruta_img in imagenes:
         cv2.putText(img_anotada, f"{i}:{label_txt}", (x1, y1 - 8), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-    # --- 📊 3. GUARDAR RESULTADO INDIVIDUAL ---
-    # Dibujar panel de resumen
-    overlay = img_anotada.copy()
-    cv2.rectangle(overlay, (10, 10), (500, 210), (0, 0, 0), -1)
-    cv2.addWeighted(overlay, 0.6, img_anotada, 0.4, 0, img_anotada)
+    # --- 📊 3. GUARDAR RESULTADO INDIVIDUAL Y CÁLCULO TZI ---
+    total_anormales = total_detecciones - stats["normal"]
+    total_defectos = stats["cabeza_anormal"] + stats["cola_anormal"] + stats["pieza_intermedia_anormal"] + stats["residuo_citoplasmatico"]
+    tzi = (total_defectos / total_anormales) if total_anormales > 0 else 0
     
-    y0, dy = 40, 30
-    cv2.putText(img_anotada, f"Muestra: {nombre_archivo}", (20, y0), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+    # Dibujar panel de resumen
+    os.makedirs(DIR_RESULTADOS, exist_ok=True)
+    overlay = img_anotada.copy()
+    cv2.rectangle(overlay, (10, 10), (520, 250), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.7, img_anotada, 0.3, 0, img_anotada)
+    
+    y0, dy = 40, 32
+    cv2.putText(img_anotada, f"EXPERIMENTO 5 - TZI REPORT", (20, y0), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 200, 0), 2)
+    
+    y0 += dy
+    cv2.putText(img_anotada, f"Muestra: {nombre_archivo[:30]}", (20, y0), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+    
+    y0 += dy
+    cv2.putText(img_anotada, f"Células: {total_detecciones} | TZI: {tzi:.2f}", (20, y0), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
     
     y0 += dy
     perc_normal = (stats["normal"] / total_detecciones * 100) if total_detecciones > 0 else 0
-    cv2.putText(img_anotada, f"Total: {total_detecciones} | Normales: {perc_normal:.1f}%", (20, y0), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+    cv2.putText(img_anotada, f"Normales: {stats['normal']} ({perc_normal:.1f}%)", (20, y0), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     
     y0 += dy
-    # Mostrar top defectos
-    defectos_str = "Defectos:"
-    cv2.putText(img_anotada, defectos_str, (20, y0), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+    # Mostrar desglose de defectos (como el Excel)
+    cv2.putText(img_anotada, "Desglose de Defectos (sobre anormales):", (20, y0), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
+    
+    col_x = [40, 260] # Dos columnas para ahorrar espacio
+    current_col = 0
     
     for idx, clase in enumerate(CLASES):
         if clase == "normal": continue
-        y0 += dy - 5
+        
+        if current_col == 0: y0 += dy - 5
+        
         count = stats[clase]
-        perc = (count / total_detecciones * 100) if total_detecciones > 0 else 0
-        txt = f"- {clase.replace('_anormal', ''):15s}: {count:3d} ({perc:4.1f}%)"
-        cv2.putText(img_anotada, txt, (40, y0), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 100, 255), 1)
+        perc = (count / total_anormales * 100) if total_anormales > 0 else 0
+        name_short = clase.split("_")[0].capitalize()
+        txt = f"- {name_short}: {perc:4.1f}%"
+        
+        cv2.putText(img_anotada, txt, (col_x[current_col], y0), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 150, 255), 1)
+        current_col = 1 - current_col # Alternar columna
 
-    ruta_salida = os.path.join(DIR_RESULTADOS, f"DETALLE_{nombre_archivo}")
+    ruta_salida = os.path.join(DIR_RESULTADOS, f"REPORTE_{nombre_archivo}")
     cv2.imwrite(ruta_salida, img_anotada)
     print(f"   ✅ Reporte detallado guardado en: {ruta_salida}")
 
