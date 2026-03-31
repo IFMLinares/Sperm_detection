@@ -11,37 +11,37 @@ El siguiente diagrama detalla el proceso desde la captura de imagen hasta el dia
 
 ```mermaid
 graph LR
-    subgraph "Entrada"
-        IN["Imagen Crop<br/>(300x300x3)"]
+    subgraph "PROCESAMIENTO DE IMAGEN"
+        IN["<b>IMAGEN DE ENTRADA</b><br/>(300 x 300 x 3)"]
     end
 
-    subgraph "EfficientNetB0 Backbone (Feature Extractor)"
-        B1["Conv2D Initial<br/>(3x3, s2)"]
-        B2["Stage 1-7<br/>MBConv Blocks"]
-        B3["Conv2D 1x1<br/>(1280 maps)"]
+    subgraph "EXTRACTOR DE CARACTERÍSTICAS (EFFICIENTNET-B0)"
+        B1["<b>CONVOLUCIÓN INICIAL</b><br/>(3x3 / s2)"]
+        B2["<b>BLOQUES MBCONV 1-7</b><br/>(Squeeze-and-Excitation)"]
+        B3["<b>CONVOLUCIÓN FINAL 1x1</b><br/>(1280 Mapas de Características)"]
     end
 
-    subgraph "Custom Classifier Head"
-        H1["Global Average<br/>Pooling 2D"]
-        H2["Batch<br/>Normalization"]
-        H3["Dense Layer<br/>(512 units, ReLU)"]
-        H4["Dropout<br/>(p=0.4)"]
-        H5{{"Sigmoid Output<br/>(5 Clases)"}}
+    subgraph "CABEZAL DE CLASIFICACIÓN (DENSE HEAD)"
+        H1["<b>GLOBAL AVERAGE POOLING</b><br/>(Vector de 1280)"]
+        H2["<b>BATCH NORMALIZATION</b>"]
+        H3["<b>CAPA DENSA (DENSE)</b><br/>(512 Neuronas - ReLU)"]
+        H4["<b>DROPOUT (40%)</b>"]
+        H5{{"<b>CAPA DE SALIDA</b><br/>(5 Sigmoides Multietiqueta)"}}
     end
 
-    IN --> B1
-    B1 --> B2
-    B2 --> B3
-    B3 --> H1
-    H1 --> H2
-    H2 --> H3
-    H3 --> H4
-    H4 --> H5
+    IN ==> B1
+    B1 ==> B2
+    B2 ==> B3
+    B3 ==> H1
+    H1 ==> H2
+    H2 ==> H3
+    H3 ==> H4
+    H4 ==> H5
 
-    %% Estilos para simular diagrama de arquitectura CNN
-    classDef input fill:#f1f8e9,stroke:#33691e,stroke-width:2px;
-    classDef backbone fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef head fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    %% Estilos de alto contraste para máxima legibilidad
+    classDef input fill:#ccffcc,stroke:#006600,stroke-width:3px,color:#000,font-weight:bold;
+    classDef backbone fill:#cce6ff,stroke:#004080,stroke-width:3px,color:#000,font-weight:bold;
+    classDef head fill:#ffe0b3,stroke:#804000,stroke-width:3px,color:#000,font-weight:bold;
     
     class IN input;
     class B1,B2,B3 backbone;
