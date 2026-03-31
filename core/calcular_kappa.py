@@ -7,7 +7,11 @@ from sklearn.metrics import cohen_kappa_score, multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
 
 # --- 🤫 SILENCIAR WARNINGS ---
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import sys
+if sys.stdout.encoding != 'utf-8':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # --- ⚙️ CONFIGURACIÓN ---
 BASE_DIR    = Path(__file__).parent.parent
