@@ -211,11 +211,11 @@ graph TD
     SUM ==> ACC_N
     ACC_D & ACC_N ==> TZI_F
 
-    %% Estilos
-    classDef inference fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef logic fill:#cce6ff,stroke:#004080,stroke-width:2px;
-    classDef stats fill:#ffe0b3,stroke:#804000,stroke-width:2px;
-    classDef final fill:#ccffcc,stroke:#006600,stroke-width:3px;
+    %% Estilos de alto contraste para máxima legibilidad
+    classDef inference fill:#f9f,stroke:#333,stroke-width:2px,color:#000,font-weight:bold;
+    classDef logic fill:#cce6ff,stroke:#004080,stroke-width:2px,color:#000,font-weight:bold;
+    classDef stats fill:#ffe0b3,stroke:#804000,stroke-width:2px,color:#000,font-weight:bold;
+    classDef final fill:#ccffcc,stroke:#006600,stroke-width:3px,color:#000,font-weight:bold;
     
     class SOFT inference;
     class TH,BIN,SUM logic;
