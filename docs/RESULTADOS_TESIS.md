@@ -10,15 +10,42 @@ El sistema utiliza una arquitectura basada en **EfficientNetB0** optimizada con 
 El siguiente diagrama detalla el proceso desde la captura de imagen hasta el diagnóstico final automatizado:
 
 ```mermaid
-graph TD
-    A["Imagen Capturada .jpg"] --> B["Segmentación de Células Individuales"]
-    B --> C["Normalización y Redimensionamiento 300x300px"]
-    C --> D["Extractor de Características EfficientNetB0"]
-    D --> E["Capa de Clasificación Multietiqueta (Sigmoid)"]
-    E --> F["Vectores de Probabilidad por Clase"]
-    F --> G["Filtro por Umbrales de Confianza Optimizados"]
-    G --> H["Clasificación Final (Normal vs Anomalías)"]
-    H --> I["Generación de Reporte Clínico y Cálculo de TZI"]
+graph LR
+    subgraph "Entrada"
+        IN["Imagen Crop<br/>(300x300x3)"]
+    end
+
+    subgraph "EfficientNetB0 Backbone (Feature Extractor)"
+        B1["Conv2D Initial<br/>(3x3, s2)"]
+        B2["Stage 1-7<br/>MBConv Blocks"]
+        B3["Conv2D 1x1<br/>(1280 maps)"]
+    end
+
+    subgraph "Custom Classifier Head"
+        H1["Global Average<br/>Pooling 2D"]
+        H2["Batch<br/>Normalization"]
+        H3["Dense Layer<br/>(512 units, ReLU)"]
+        H4["Dropout<br/>(p=0.4)"]
+        H5{{"Sigmoid Output<br/>(5 Clases)"}}
+    end
+
+    IN --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> H1
+    H1 --> H2
+    H2 --> H3
+    H3 --> H4
+    H4 --> H5
+
+    %% Estilos para simular diagrama de arquitectura CNN
+    classDef input fill:#f1f8e9,stroke:#33691e,stroke-width:2px;
+    classDef backbone fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef head fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    
+    class IN input;
+    class B1,B2,B3 backbone;
+    class H1,H2,H3,H4,H5 head;
 ```
 
 - **Parámetros del Modelo:** 4,111,725
