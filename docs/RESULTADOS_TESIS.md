@@ -11,14 +11,14 @@ El siguiente diagrama detalla el proceso desde la captura de imagen hasta el dia
 
 ```mermaid
 graph TD
-    A[Imagen Capturada .jpg] --> B[Segmentación de Células Individuales]
-    B --> C[Normalización y Redimensionamiento 300x300px]
-    C --> D[Extractor de Características EfficientNetB0]
-    D --> E[Capa de Clasificación Multietiqueta (Sigmoid)]
-    E --> F[Vectores de Probabilidad por Clase]
-    F --> G[Filtro por Umbrales de Confianza Optimizados]
-    G --> H[Clasificación Final (Normal vs Anomalías)]
-    H --> I[Generación de Reporte Clínico y Cálculo de TZI]
+    A["Imagen Capturada .jpg"] --> B["Segmentación de Células Individuales"]
+    B --> C["Normalización y Redimensionamiento 300x300px"]
+    C --> D["Extractor de Características EfficientNetB0"]
+    D --> E["Capa de Clasificación Multietiqueta (Sigmoid)"]
+    E --> F["Vectores de Probabilidad por Clase"]
+    F --> G["Filtro por Umbrales de Confianza Optimizados"]
+    G --> H["Clasificación Final (Normal vs Anomalías)"]
+    H --> I["Generación de Reporte Clínico y Cálculo de TZI"]
 ```
 
 - **Parámetros del Modelo:** 4,111,725
