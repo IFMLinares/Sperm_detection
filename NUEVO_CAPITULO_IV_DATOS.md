@@ -49,11 +49,15 @@ A continuación, se presentan las métricas finales obtenidas por el modelo **Ef
 
 ---
 
-## 📝 4. Sustentación de la Gráfica de Regresión (Concordancia General)
-La validación frente al estándar de oro (Bioanalista experto) se realizó comparando el porcentaje de anomalías detectadas por muestra. El análisis arroja una correlación casi lineal ($R^2 = 0.9938$).
+## 📝 4. Sustentación de la Gráfica de Regresión (Experto vs Algoritmo)
+La validación se realizó sobre el porcentaje de formas normales, siguiendo los criterios clínicos internacionales. El análisis arroja una línea de tendencia idéntica a la validación técnica con una pendiente de **0.9282**.
 
-### Gráfica de Concordancia Experto vs IA
-![Regresión de Concordancia General](docs/evaluacion/regression_concordancia_v8.png)
+### Gráfica de Regresión Lineal: Experto vs Algoritmo
+![Análisis de Regresión Lineal](docs/evaluacion/regression_concordancia_v8.png)
+
+*   **Ecuación de la recta:** $y = 0.9282x + 0.3128$
+*   **Coeficiente de Determinación ($R^2$):** **0.9938**
+*   **Significancia:** $p < 0.001$.
 
 ---
 
